@@ -36,4 +36,9 @@ rule token = parse
   | blank    { micro lexbuf } (* skipping blank characters *)
   | _        { syntax_error "couldn't identify the token" }
   | eof      { EOF } (* no more tokens *)
-
+  | iden as i {
+          (* try keywords if not found then it's identifier *)
+          let l = String.lowercase i in
+          try List.assoc l keywords
+          with Not_found -> IDENTIFIER i
+    }
