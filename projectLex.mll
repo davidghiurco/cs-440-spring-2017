@@ -6,16 +6,16 @@
     let line_num = ref 1
     exception Syntax_error of string
     let syntax_error msg = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !line_num)))
+    let keywords = [
+        "pokemon", POKEMON;
+        "fight", FIGHT;
+        "fire", FIRE;
+        "water", WATER;
+        "electric", ELECTRIC;
+        "grass", GRASS;
+        ]
 }
 
-let keyword_table = 
-    ["pokemon", POKEMON;
-	"fight", FIGHT;
-    "fire", FIRE;
-	"water", WATER;
-	"electric", ELECTRIC;
-	"grass", GRASS;
-	]
 
 
 let blank = [' ' '\r' '\t']
