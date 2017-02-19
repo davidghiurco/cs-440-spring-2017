@@ -41,3 +41,10 @@ Statements => { Statement }
 Statement => ; | Assignment | Fight
 Assignment => pokemon Type Identifier [ [ Expression ] ] = Expression ;
 Fight =>identifier fight identifier /* IfStatements that check for types and does some calculations’’
+
+## How to Run
+
+```
+make clean && make
+./pokemon
+```
