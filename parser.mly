@@ -12,5 +12,6 @@ expr EOL                { $1 }
 ;
 expr:
 INT                     { $1 }
-| expr PLUS expr          {print_string ">> "; $1 + $3 }
+| expr PLUS expr            { print_string ">> "; $1 + $3 }
+| FIRE INT FIGHT FIRE INT   { print_string ">> "; if $2 > $5 then $2 else $5 }
 ;
