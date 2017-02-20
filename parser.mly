@@ -1,14 +1,39 @@
 /* File parser.mly */
 %{
-  (*
-  let vars = Hashtbl.create 100
 
-  let is_alloc_var v = Hashtbl.mem !vars v
+let is_larger v1 v2 = if v1 > v2 then v1 else v2;;
+exception Codegen_error of string
+let codegen_error msg = raise (Codegen_error msg)
 
-  let alloc_var v = if is_alloc_var v then var v
-                    else let _ = Hashtbl.replace !vars v (empty_var 1) in var v
+let pokemon_fight p1 v1 p2 v2 =
+  if p1 = "FIRE" then
+    if p2 = "FIRE" then is_larger v1 v2
+    else if p2 = "GRASS" then let v3 = 2*v1 in is_larger v3 v2;
+    else if p2 = "ELECTRIC" then is_larger v1 v2
+    else if p2 = "WATER" then is_larger v1 2*v2
+    else codegen_error "Invalid Pokemon Type"
+  else if p1 = "GRASS" then
+      if p2 = "FIRE" then is_larger v1 2*v2
+      else if p2 = "GRASS" then is_larger v1 v2
+      else if p2 = "ELECTRIC" then is_larger v1 v2
+      else if p2 = "WATER" then let v3 = 2*v1 in is_larger v3 v2
+      else codegen_error "Invalid Pokemon Type"
+  else if p1 = "ELECTRIC" then
+      if p2 = "FIRE" then is_larger v1 v2
+      else if p2 = "GRASS" then is_larger v1 2*v2
+      else if p2 = "ELECTRIC" then is_larger v1 v2
+      else if p2 = "WATER" then let v3 = 2*v1 in is_larger v3 v2
+      else codegen_error "Invalid Pokemon Type"
+  else if p1 = "WATER" then
+      if p2 = "FIRE" then let v3 = 2*v1 in is_larger v3 v2
+      else if p2 = "GRASS" then is_larger v1 v2
+      else if p2 = "ELECTRIC" then is_larger v1 2*v2
+      else if p2 = "WATER" then is_larger v1 v2
+      else codegen_error "Invalid Pokemon Type"
+  else
+    codegen_error "Invalid Pokemon Type";;
 
-  let generate_assign a b = generate_copy (alloc_var a) b*)
+let is_valid_value v = if v > 0 then v else codegen_error "Pokeon value is not valid. Must be positive integer.";;
 %}
 
 %token <int> INT
@@ -21,16 +46,16 @@
 %type <int> main
 %%
 main:
-expr EOL                { $1 }
+expr EOL                                    { $1 }
 ;
 expr:
-INT                     { $1 }
-| expr PLUS expr            { print_string ">> "; $1 + $3 }
-| pokemon_type INT FIGHT FIRE INT   { print_string ">> "; if $2 > $5 then $2 else $5 }
+INT                                         { is_valid_value $1 }
+| expr PLUS expr                            { print_string ">> "; $1 + $3 }
+| pokemon_type INT FIGHT pokemon_type INT   { print_string ">> "; pokemon_fight $1 $2 $4 $5 }
 ;
 
 pokemon_type:
-| FIRE {}
-| GRASS {}
-| ELECTRIC {}
-| WATER {}
+| FIRE {"FIRE"}
+| GRASS {"GRASS"}
+| ELECTRIC {"ELECTRIC"}
+| WATER {"WATER"}
