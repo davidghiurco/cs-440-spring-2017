@@ -26,7 +26,10 @@ There are several data types that are specialized for Pokemon. These values woul
 
 The Runtime
 The core of Poke-Fight is a turn-based text interface that will allow a programmer to create a 1-vs-1 Pokemon tournament program. Once written, the program will declare the winner of the 2 players based on the type and power level of the used Pokemon.
+
 # Grammar
+The grammar will specify what inputs are valid in the language
+
 Program => Pokefight main ( ) { Declarations Statements }
 Declarations => { Declaration }
 Declaration => Type Identifier [ [ Integer ] ]
