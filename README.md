@@ -30,6 +30,7 @@ There are several data types that are specialized for Pokemon. These values woul
 ###The Runtime <br />
 The core of Poke-Fight is a turn-based text interface that will allow a programmer to create a 1-vs-1 Pokemon tournament program. Once written, the program will declare the winner of the 2 players based on the type and power level of the used Pokemon.
 
+
 #Grammar
 The grammar will specify what inputs are valid in the language <br />
 Note: <br />
@@ -44,6 +45,14 @@ Expression  => int <br />
 Type        => water | fire | grass | electric <br />
 Fight       => identifier fight identifier ; <br />*
 
-This grammar is **unambiguous** because it contains no operators of different precedence and recursion is kept to a minimum. For any input, there will be only one left-most derivation. <br />
+This grammar is _unambiguous_ because it contains no operators of different precedence and recursion is kept to a minimum. For any input, there will be only one left-most derivation. <br />
 
 We chose to keep the grammar unambiguous for now to only support 1v1 fights. It may become more complicated in the future if we decide to add many-vs-many pokemon fight functionality.
+
+# How to Run (Command-line Interpreter)
+
+```
+make clean && make
+./pokemon
+```
+
