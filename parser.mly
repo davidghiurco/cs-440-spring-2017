@@ -47,9 +47,8 @@
   %}
 
   %token <int> INT
-  %token PLUS
+  %token PLUS ASSIGN
   %token POKEMON FIGHT FIRE WATER ELECTRIC GRASS
-  %token <string> ASSIGN
   %token <string> IDENTIFIER
   %token EOL
   %start main             /* the entry point */
@@ -62,6 +61,7 @@
   INT                                         { is_valid_value $1 }
   | expr PLUS expr                            { print_string ">> "; $1 + $3 }
   | pokemon_type INT FIGHT pokemon_type INT   { print_string ">> " ; pokemon_fight $1 $2 $4 $5 }
+  | pokemon_type IDENTIFIER ASSIGN expr       { Printf.printf "%s %s \n" $1 $2 ; $4 }
   ;
 
   pokemon_type:
