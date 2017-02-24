@@ -26,7 +26,7 @@ blank             { token lexbuf }     (* skip blanks *)
 | '='             { ASSIGN }
 | ['\n' ]         { incr line_num ; token lexbuf } (* after a line break increment total number of lines *)
 | ";"             { EOL }
-| digits as d   { INT(int_of_string d) }
+| digits as d     { INT(int_of_string d) }
 | '+'             { PLUS }
 | _               { syntax_error "couldn't identify the token" }
 | eof             { raise Eof }

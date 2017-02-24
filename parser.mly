@@ -62,11 +62,11 @@
   | expr PLUS expr                            { print_string ">> "; $1 + $3 }
   | pokemon_type INT FIGHT pokemon_type INT   { print_string ">> " ; pokemon_fight $1 $2 $4 $5 }
   | pokemon_type IDENTIFIER ASSIGN expr       { Printf.printf "%s %s \n" $1 $2 ; $4 }
-  | IDENTIFIER FIGHT IDENTIFIER               {Printf.printf "%s  vs %s \n" $1 $3 ; 1}
+  | IDENTIFIER FIGHT IDENTIFIER               { Printf.printf "%s vs %s \n" $1 $3 ; 1 }
   ;
 
   pokemon_type:
-  | FIRE {"FIRE"}
-  | GRASS {"GRASS"}
-  | ELECTRIC {"ELECTRIC"}
-  | WATER {"WATER"}
+  | FIRE        {"FIRE"}
+  | GRASS       {"GRASS"}
+  | ELECTRIC    {"ELECTRIC"}
+  | WATER       {"WATER"}
