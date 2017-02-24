@@ -52,7 +52,6 @@ We chose to keep the grammar unambiguous for now to only support 1v1 fights. It 
 # How to Run (Command-line Interpreter)
 
 ```
-make clean && make
-./pokemon
+$ make clean && make
+$ ./pokemon
 ```
-
