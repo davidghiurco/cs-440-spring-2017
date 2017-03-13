@@ -42,8 +42,12 @@
   else codegen_error "Invalid Pokemon Type"
   else
   codegen_error "Invalid Pokemon Type";;
-
+  type symbols_table_entry = {pokemontype:string; power: int};;
   let is_valid_value v = if v > 0 then v else codegen_error "Pokemon value is not valid. Must be positive integer.";;
+  let symbols_table = ref (Hashtbl.create 12345);;
+  let assign_var key poke_type p = let p_entry = {pokemontype=poke_type;power=p} in Hashtbl.replace !symbols_table key p_entry ;;
+  let get_var key = Hashtbl.find !symbols_table key ;;
+
   %}
 
   %token <int> INT
@@ -61,8 +65,9 @@
   INT                                         { is_valid_value $1 }
   | expr PLUS expr                            { print_string ">> "; $1 + $3 }
   | pokemon_type INT FIGHT pokemon_type INT   { print_string ">> " ; pokemon_fight $1 $2 $4 $5 }
-  | pokemon_type IDENTIFIER ASSIGN expr       { Printf.printf "%s %s \n" $1 $2 ; $4 }
   | IDENTIFIER FIGHT IDENTIFIER               { Printf.printf "%s vs %s \n" $1 $3 ; 1 }
+  | pokemon_type IDENTIFIER ASSIGN expr       { assign_var $2 $1 $4 ; $4}
+  | IDENTIFIER                                { let r = get_var $1 in r.power }
   ;
 
   pokemon_type:
