@@ -63,7 +63,6 @@
   ;
   expr:
   INT                                         { is_valid_value $1 }
-  | expr PLUS expr                            { print_string ">> "; $1 + $3 }
   | pokemon_type INT FIGHT pokemon_type INT   { print_string ">> " ; pokemon_fight $1 $2 $4 $5 }
   | IDENTIFIER FIGHT IDENTIFIER               { Printf.printf "%s vs %s \n" $1 $3 ; 1 }
   | pokemon_type IDENTIFIER ASSIGN expr       { assign_var $2 $1 $4 ; $4}
