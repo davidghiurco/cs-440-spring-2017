@@ -67,6 +67,17 @@ src: https://caml.inria.fr/pub/docs/manual-ocaml/lexyacc.html#sec296
 
 The language uses a global symbols table is implemented with a hash table.
 
+```
+The ocamlyacc command produces a parser from a context-free grammar specification with attached semantic actions, in the style of yacc. Assuming the input file is grammar.mly, executing
+
+        ocamlyacc options grammar.mly
+
+produces OCaml code for a parser in the file grammar.ml, and its interface in file grammar.mli.
+
+The generated module defines one parsing function per entry point in the grammar. These functions have the same names as the entry points. Parsing functions take as arguments a lexical analyzer (a function from lexer buffers to tokens) and a lexer buffer, and return the semantic attribute of the corresponding entry point. Lexical analyzer functions are usually generated from a lexer specification by the ocamllex program. Lexer buffers are an abstract data type implemented in the standard library module Lexing. Tokens are values from the concrete type token, defined in the interface file grammar.mli produced by ocamlyacc.
+```
+src: https://caml.inria.fr/pub/docs/manual-ocaml/lexyacc.html#sec307
+
 # How to Run (Command-line Interpreter)
 
 ```
