@@ -147,7 +147,11 @@
     | WATER       {Leaf {data_type="WATER";value="WATER";token="Pokemon_Type"}}
 
     Pokemon:
-    | Pokemon_Type Literal                {let n = if get_type_from_leaf_node($2)=="int" then Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) else typecheck_error "Invalid Type" in n; }
+    | Pokemon_Type Literal                {if get_type_from_leaf_node($2) = "int"
+                                              then
+                                                Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2)
+                                              else
+                                                typecheck_error "Invalid Type"}
 
     | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
                                               then  Node (
