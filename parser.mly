@@ -1,7 +1,7 @@
 /* File parser.mly */
 %{
 
-  type 'a tree = Leaf of 'a | Node of 'a tree * 'a * 'a tree;;
+  type 'a tree = Leaf of 'a | Node of 'a tree * 'a * 'a tree | Node_OneChild of 'a tree * 'a;;
   type ast_node = {data_type: string; value: string; token: string };;
 
   let draw tree =
@@ -14,6 +14,11 @@
   print (indent ^ "| ") left;
   Printf.printf "%s%s\n" indent n.token;
   print (indent ^ "| ") right;
+  Printf.printf "%s------\n" indent
+  | Node_OneChild (left, n) ->
+  Printf.printf "%s------\n" indent;
+  print (indent ^ "| ") left;
+  Printf.printf "%s%s\n" indent n.token;
   Printf.printf "%s------\n" indent
   in
   print "" tree
@@ -82,33 +87,34 @@
   %type <int> main
   %%
   main:
-  Statements EOL                                { let t = Node(
-    $1,
-    {data_type="int";value="MAIN";token="MAIN"},
-    Leaf {data_type="string";value=";";token="EOL"}) ;
-    print_string "---\n";
-    draw t; 1}
+  Statements EOL                                { $1 ; 1}
     ;
 
     Statements:
-    | Statement                                   { $1 }
+    | Statement                                   { $1 ; 1 }
     ;
 
     Statement:
-    | Assignment                                  { $1 }
-    | FIGHT                                       { $1 } (* do calculation here *)
+    | Assignment                                  { $1 ; 1 }
+    | Fight                                       { $1 ; 1 } /* do calculation here */
     ;
 
     Assignment:
-    | Declaration ASSIGN Literal                       { }
-    ;
+    | Declaration ASSIGN Literal                       { draw (Node(
+                                                    $1,
+                                                    {data_type="Pokemon_Type"; value="ASSIGN"; token="ASSIGN"},
+                                                    $3)); 1} /* TODO: type check $3 aka literal to be an int */    ;
 
     Declaration:
-    | Pokemon_Type IDENTIFIER                     { }
+    | Pokemon_Type IDENTIFIER                     { Node(
+                                                    $1,
+                                                    {data_type="Pokemon_Type"; value="DECLARATION"; token="DECLARATION"},
+                                                    Leaf {data_type="string"; value=$2; token="IDENTIFIER"}
+                                                    );}
     ;
 
     Literal:
-    | INT                                         {Leaf {data_type="int"; value=$1; token="LITERAL"}}
+    | INT                                         {Leaf {data_type="int"; value=string_of_int $1; token="LITERAL"}}
     | STRING                                      {Leaf {data_type="string"; value=$1; token="LITERAL"}}
     ;
 
@@ -118,20 +124,17 @@
     | ELECTRIC    {Leaf {data_type="ELECTRIC";value="ELECTRIC";token="Pokemon_Type"}}
     | WATER       {Leaf {data_type="WATER";value="WATER";token="Pokemon_Type"}}
 
+    Pokemon:
+    | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) } /* TODO: type check here that its an int not a string */
+
+
     Fight:
-    | Fight FIGHT IDENTIFIER               { Node(
+    | Fight FIGHT Fight               { Node(
                                               $1 ,
                                               {data_type="string"; value="fight"; token="FIGHT"},
-                                              Leaf {data_type="string"; value=$1; token="IDENTIFIER"}
+                                              $3
                                               );}
 
-    | Pokemon_Type Literal FIGHT Fight
-                                          { $1.value = $2; Node(
-                                            $1 ,
-                                            {data_type="string"; value="fight"; token="FIGHT"},
-                                            Leaf {data_type="string"; value=$1; token="IDENTIFIER"}
-                                            ); }
-
-    | IDENTIFIER                          {Leaf {data_type="string"; value=$1; token="IDENTIFIER"}}  (* TODO: check here if iden exists in the hastbl and set the value else error *)
-    | Pokemon_Type Literal                {Leaf {data_type="Pokemon_Type"; value=$2; token="Pokemon_Type"}} (* TODO: type check here that its an int not a string *)
+    | IDENTIFIER                          {Leaf {data_type="string"; value=$1; token="IDENTIFIER"}}  /* TODO: check here if iden exists in the hastbl and set the value else error */
+    | Pokemon                             { $1 }
     ;
