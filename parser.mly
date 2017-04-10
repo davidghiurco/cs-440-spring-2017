@@ -36,10 +36,10 @@
   else let damage=v2-v1 in pokemon_fight_results p2 p1 damage;;
 
   exception Codegen_error of string
-  let codegen_error msg = raise (Codegen_error msg)
+  let codegen_error msg = raise (Codegen_error msg);;
 
   exception Name_error of string
-  let name_error iden = raise (Name_error iden^" is not defined")
+  let name_error iden = raise (Name_error (iden^" is not defined"));;
 
   let pokemon_fight (p1: string) (v1 : int) (p2 : string) (v2 : int) : int =
   if p1 = "FIRE" then
@@ -78,6 +78,16 @@
   let p1 = get_var i1 in
   let p2 = get_var i2 in
   pokemon_fight p1.pokemontype p1.power p2.pokemontype p2.power;;
+
+  let get_stored_pokemon_type (iden : string) : string =
+    let p = Hashtbl.find !symbols_table iden in
+    p.pokemontype
+  ;;
+
+  let get_stored_pokemon_power (iden : string) : int =
+  let p = Hashtbl.find !symbols_table iden in
+  p.power
+  ;;
   %}
 
   %token <int> INT
@@ -131,9 +141,9 @@
     | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) }
     | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
                                               then  Node (
-                                                    Leaf {data_type="string", value=(Hashtbl.find !symbols_table $1).pokemontype},
+                                                    Leaf {data_type="Pokemon_Type"; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
                                                     {data_type="string"; value=$1; token="IDENTIFIER"},
-                                                    Leaf {data_type="int", value=(Hashtbl.find !symbols_table $1).power})
+                                                    Leaf {data_type="int"; value=string_of_int (get_stored_pokemon_power $1); token="LITERAL"})
                                               else
                                                     name_error $1
                                           }
