@@ -38,6 +38,9 @@
   exception Codegen_error of string
   let codegen_error msg = raise (Codegen_error msg)
 
+  exception Name_error of string
+  let name_error iden = raise (Name_error iden^" is not defined")
+
   let pokemon_fight (p1: string) (v1 : int) (p2 : string) (v2 : int) : int =
   if p1 = "FIRE" then
   if p2 = "FIRE" then pokemon_fight_helper p1 v1 p2 v2
@@ -75,6 +78,9 @@
   let p1 = get_var i1 in
   let p2 = get_var i2 in
   pokemon_fight p1.pokemontype p1.power p2.pokemontype p2.power;;
+
+  let identifier_ast =
+
   %}
 
   %token <int> INT
@@ -125,8 +131,20 @@
     | WATER       {Leaf {data_type="WATER";value="WATER";token="Pokemon_Type"}}
 
     Pokemon:
-    | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) } /* TODO: type check here that its an int not a string */
-    | IDENTIFIER                          { Node(/*pokemon type leaf node*/, {data_type="string"; value=$1; token="IDENTIFIER"}, /* literal value leaf node*/)}  /* TODO: check here if iden exists in the hastbl and set the value else error */
+    | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) }
+    | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
+                                              then  Node (
+                                                    Leaf {data_type="string", value=(Hashtbl.find !symbols_table $1).pokemontype},
+                                                    {data_type="string"; value=$1; token="IDENTIFIER"},
+                                                    Leaf {data_type="int", value=(Hashtbl.find !symbols_table $1).power})
+                                              else
+                                                    name_error $1
+                                          }
+
+
+
+      Node(, {data_type="string"; value=$1; token="IDENTIFIER"},)
+                                          }
 
 
     Fight:
