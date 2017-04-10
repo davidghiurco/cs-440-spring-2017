@@ -100,23 +100,23 @@
   %type <int> main
   %%
   main:
-  Statements EOL                                { $1 ; 1}
+  Statements EOL                                { let t = Node_OneChild($1, {data_type="Pokemon_Type"; value="Main"; token="Main"} ) in draw t; 1}
     ;
 
     Statements:
-    | Statement                                   { $1 ; 1 }
+    | Statement                                   { Node_OneChild($1, {data_type="Pokemon_Type"; value="Statements"; token="Statements"} ) }
     ;
 
     Statement:
-    | Assignment                                  { $1 ; 1}
-    | Fight                                       { $1 ; 1} /* do calculation here */
+    | Assignment                                  { Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )}
+    | Fight                                       { Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )} /* do calculation here */
     ;
 
     Assignment:
-    | Declaration ASSIGN Literal                   { let t = (Node(
+    | Declaration ASSIGN Literal                   { Node(
                                                     $1,
                                                     {data_type="Pokemon_Type"; value="ASSIGN"; token="ASSIGN"},
-                                                    $3)) in draw t} /* TODO: type check $3 aka literal to be an int, If valid insert into hashtbl */    ;
+                                                    $3) } /* TODO: type check $3 aka literal to be an int, If valid insert into hashtbl */    ;
 
     Declaration:
     | Pokemon_Type IDENTIFIER                     { Node(
@@ -138,7 +138,6 @@
     | WATER       {Leaf {data_type="WATER";value="WATER";token="Pokemon_Type"}}
 
     Pokemon:
-   
     | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) }
     | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
                                               then  Node (
@@ -154,4 +153,5 @@
                                               {data_type="string"; value="fight"; token="FIGHT"},
                                               $3
                                               );}
+    | Pokemon                            { $1 }
     ;
