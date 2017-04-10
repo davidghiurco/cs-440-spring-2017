@@ -78,9 +78,6 @@
   let p1 = get_var i1 in
   let p2 = get_var i2 in
   pokemon_fight p1.pokemontype p1.power p2.pokemontype p2.power;;
-
-  let identifier_ast =
-
   %}
 
   %token <int> INT
