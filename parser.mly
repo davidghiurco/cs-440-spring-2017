@@ -35,8 +35,17 @@
   else if v1 > v2 then let damage=v1-v2 in pokemon_fight_results p1 p2 damage
   else let damage=v2-v1 in pokemon_fight_results p2 p1 damage;;
 
+  let get_type_from_leaf_node n: string =
+  match n with
+  Leaf n -> n.data_type;;
+
+
   exception Codegen_error of string
   let codegen_error msg = raise (Codegen_error msg);;
+
+  exception Typecheck_error of string
+  let typecheck_error emsg = raise (Typecheck_error emsg);;
+
 
   exception Name_error of string
   let name_error iden = raise (Name_error (iden^" is not defined"));;
@@ -138,7 +147,8 @@
     | WATER       {Leaf {data_type="WATER";value="WATER";token="Pokemon_Type"}}
 
     Pokemon:
-    | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) }
+    | Pokemon_Type Literal                {let n = if get_type_from_leaf_node($2)=="int" then Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) else typecheck_error "Invalid Type" in n; }
+
     | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
                                               then  Node (
                                                     Leaf {data_type="Pokemon_Type"; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
