@@ -1,6 +1,24 @@
 /* File parser.mly */
 %{
 
+  type 'a tree = Leaf of 'a | Node of 'a tree * 'a * 'a tree;;
+  type ast_node = {data_type: string; value: string; token: string };;
+
+  let draw tree =
+    let rec print indent tree =
+      match tree with
+          Leaf n ->
+          Printf.printf "%s%s--%s\n" indent n.token n.value
+       | Node (left, n, right) ->
+          Printf.printf "%s------\n" indent;
+          print (indent ^ "| ") left;
+          Printf.printf "%s%s\n" indent n.token;
+          print (indent ^ "| ") right;
+          Printf.printf "%s------\n" indent
+    in
+    print "" tree
+    ;;
+
   let pokemon_fight_results winner loser damage : int=
     match damage with
     | 0 -> Printf.printf "%s\n" "Tie" ; damage;
@@ -58,23 +76,61 @@
   %token PLUS ASSIGN
   %token POKEMON FIGHT FIRE WATER ELECTRIC GRASS
   %token <string> IDENTIFIER
+  %token <string> STRING
   %token EOL
   %start main             /* the entry point */
   %type <int> main
   %%
   main:
-  expr EOL                                    { $1 }
-  ;
-  expr:
-  INT                                         { is_valid_value $1 }
-  | pokemon_type INT FIGHT pokemon_type INT   { print_string ">> " ; pokemon_fight $1 $2 $4 $5 }
-  | IDENTIFIER FIGHT IDENTIFIER               { iden_fight_iden $1 $3 }
-  | pokemon_type IDENTIFIER ASSIGN expr       { assign_var $2 $1 $4 ; $4}
-  | IDENTIFIER                                { let r = get_var $1 in r.power }
+  Statements EOL                                { let t = Node(
+                                                    $1,
+                                                    {data_type="int";value="MAIN";token="MAIN"},
+                                                    Leaf {data_type="string";value=";";token="EOL"}) ;
+                                                  print_string "---\n";
+                                                  draw t; 1}
   ;
 
-  pokemon_type:
-  | FIRE        {"FIRE"}
-  | GRASS       {"GRASS"}
-  | ELECTRIC    {"ELECTRIC"}
-  | WATER       {"WATER"}
+  Statements:
+  | Statement                                   { $1 }
+  ;
+
+  Statement:
+  | Assignment                                  { $1 }
+  | FIGHT                                       { $1 } (* do calculation here *)
+  ;
+
+  Assignment:
+  | Declaration ASSIGN Literal                       { }
+  ;
+
+  Declaration:
+  | Pokemon_Type IDENTIFIER         { }
+  ;
+
+  Literal:
+  | INT                                         {Leaf {data_type="int"; value=$1; token="LITERAL"}}
+  | STRING                                      {Leaf {data_type="string"; value=$1; token="LITERAL"}}
+  ;
+
+  Pokemon_Type:
+  | FIRE        {Leaf {data_type="FIRE";value="FIRE";token="Pokemon_Type"}}
+  | GRASS       {Leaf {data_type="GRASS";value="GRASS";token="Pokemon_Type"}}
+  | ELECTRIC    {Leaf {data_type="ELECTRIC";value="ELECTRIC";token="Pokemon_Type"}}
+  | WATER       {Leaf {data_type="WATER";value="WATER";token="Pokemon_Type"}}
+
+  Fight:
+  | Fight FIGHT IDENTIFIER               { Node(
+                                              $1 ,
+                                              {data_type="string"; value="fight"; token="FIGHT"},
+                                              Leaf {data_type="string"; value=$1; token="IDENTIFIER"}
+                                              );}
+
+  | Pokemon_Type Literal FIGHT Fight     { $1.value = $2; Node(
+                                              $1 ,
+                                              {data_type="string"; value="fight"; token="FIGHT"},
+                                              Leaf {data_type="string"; value=$1; token="IDENTIFIER"}
+                                              ); }
+
+  | IDENTIFIER                                      {Leaf {data_type="string"; value=$1; token="IDENTIFIER"}}  (* check here if iden exists in the hastbl and set the value else error *)
+  | Pokemon_Type Literal                            {Leaf {data_type="Pokemon_Type"; value=$2; token="Pokemon_Type"}} (* type check here that its an int not a string * )
+  ;
