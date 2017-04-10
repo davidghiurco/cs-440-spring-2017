@@ -137,13 +137,6 @@
                                               else
                                                     name_error $1
                                           }
-
-
-
-      Node(, {data_type="string"; value=$1; token="IDENTIFIER"},)
-                                          }
-
-
     Fight:
     | Fight FIGHT Fight               { Node(
                                               $1 ,
