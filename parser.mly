@@ -128,6 +128,7 @@
     | WATER       {Leaf {data_type="WATER";value="WATER";token="Pokemon_Type"}}
 
     Pokemon:
+   
     | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) }
     | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
                                               then  Node (
@@ -138,10 +139,9 @@
                                                     name_error $1
                                           }
     Fight:
-    | Fight FIGHT Fight               { Node(
+    | Fight FIGHT Pokemon               { Node(
                                               $1 ,
                                               {data_type="string"; value="fight"; token="FIGHT"},
                                               $3
                                               );}
-    | Pokemon                             { $1 }
     ;
