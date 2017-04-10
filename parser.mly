@@ -95,15 +95,15 @@
     ;
 
     Statement:
-    | Assignment                                  { $1 ; 1 }
-    | Fight                                       { $1 ; 1 } /* do calculation here */
+    | Assignment                                  { $1 ; 1}
+    | Fight                                       { $1 ; 1} /* do calculation here */
     ;
 
     Assignment:
-    | Declaration ASSIGN Literal                       { draw (Node(
+    | Declaration ASSIGN Literal                   { let t = (Node(
                                                     $1,
                                                     {data_type="Pokemon_Type"; value="ASSIGN"; token="ASSIGN"},
-                                                    $3)); 1} /* TODO: type check $3 aka literal to be an int */    ;
+                                                    $3)) in draw t} /* TODO: type check $3 aka literal to be an int, If valid insert into hashtbl */    ;
 
     Declaration:
     | Pokemon_Type IDENTIFIER                     { Node(
@@ -126,6 +126,7 @@
 
     Pokemon:
     | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) } /* TODO: type check here that its an int not a string */
+    | IDENTIFIER                          { Node(/*pokemon type leaf node*/, {data_type="string"; value=$1; token="IDENTIFIER"}, /* literal value leaf node*/)}  /* TODO: check here if iden exists in the hastbl and set the value else error */
 
 
     Fight:
@@ -134,7 +135,5 @@
                                               {data_type="string"; value="fight"; token="FIGHT"},
                                               $3
                                               );}
-
-    | IDENTIFIER                          {Leaf {data_type="string"; value=$1; token="IDENTIFIER"}}  /* TODO: check here if iden exists in the hastbl and set the value else error */
     | Pokemon                             { $1 }
     ;
