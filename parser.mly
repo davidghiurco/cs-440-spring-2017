@@ -127,13 +127,12 @@
     Pokemon:
     | Pokemon_Type Literal                {Node($1, {data_type="Pokemon"; value="Pokemon"; token="Pokemon"}, $2) } /* TODO: type check here that its an int not a string */
     | IDENTIFIER                          { Node(/*pokemon type leaf node*/, {data_type="string"; value=$1; token="IDENTIFIER"}, /* literal value leaf node*/)}  /* TODO: check here if iden exists in the hastbl and set the value else error */
-
+    ;
 
     Fight:
-    | Fight FIGHT Fight               { Node(
+    | Fight FIGHT Pokemon               { Node(
                                               $1 ,
                                               {data_type="string"; value="fight"; token="FIGHT"},
                                               $3
                                               );}
-    | Pokemon                             { $1 }
     ;
