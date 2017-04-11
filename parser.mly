@@ -137,7 +137,7 @@
 
     Literal:
     | INT                                         {Leaf {data_type="int"; value=string_of_int $1; token="LITERAL"}}
-    | STRING                                      {Leaf {data_type="string"; value=$1; token="LITERAL"}}
+    | IDENTIFIER                                  {Leaf {data_type="string"; value=$1; token="LITERAL"}}
     ;
 
     Pokemon_Type:
