@@ -146,4 +146,39 @@ WATER beats FIRE by 6 damage
 ```
 ---
 
-Syntax, Type Check, Token Error, Name
+Syntax Error
+
+Input:
+```
+```
+
+Output:
+```
+```
+---
+
+Name Error
+
+Input:
+```
+FRE 2 FIGHT WATER 3;
+```
+
+Output:
+```
+Fatal error: exception Parser.Name_error("FRE is not defined")
+```
+---
+
+Type Check Error
+
+Input:
+```
+FIRE FOUR FIGHT WATER 3;
+```
+
+Output:
+```
+Fatal error: exception Parser.Typecheck_error("Invalid Type")
+```
+---
