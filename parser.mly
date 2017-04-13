@@ -88,7 +88,10 @@
   type symbols_table_entry = {pokemontype:string; power: int};;
   let is_valid_value v = if v > 0 then v else codegen_error "Pokemon value is not valid. Must be positive integer.";;
   let symbols_table = ref (Hashtbl.create 12345);;
-  let assign_var (key: string) (poke_type: string) (p: int) = let p_entry = {pokemontype=poke_type;power=p} in Hashtbl.replace !symbols_table key p_entry ;;
+  let assign_var (key: string) (poke_type: string) (p: int) = 
+    let p_entry = {pokemontype=poke_type;power=p} in 
+    Hashtbl.replace !symbols_table key p_entry;
+  ;;
   let get_var key = Hashtbl.find !symbols_table key ;;
 
   let get_stored_pokemon_type (iden : string) : string =
@@ -132,6 +135,17 @@
     in aux tree
   ;;
 
+  let update_sym_table dec_node literal_leaf =
+  match dec_node, literal_leaf with
+  | Node (Leaf poke_type, _, Leaf poke_name), Leaf poke_power ->
+        let key = poke_name.value in
+        if poke_power.data_type = "int" then
+            let power = int_of_string(poke_power.value) in
+            let pokemon_type = poke_type.value in
+            assign_var key pokemon_type power ;
+        else typecheck_error "Expected int for pokemon power"
+  ;;
+
   %}
 
   %token <int> INT
@@ -153,14 +167,29 @@
 
   Statement:
   | Assignment                                  { Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )}
-  | Fight                                       { pokemon_fight_ast $1 ; Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )} /* do calculation here */
-  ;
+  | Fight                                       { pokemon_fight_ast $1 ; Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )} 
+  | Retrieve    { Node_OneChild(Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"}),{data_type="Pokemon_Type"; value="Retrieve"; token="Retrieve"} ) } 
+  ; 
+
+  Retrieve:
+  | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
+    then  Node (
+      Leaf {data_type="Pokemon_Type"; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
+      {data_type="Pokemon"; value=$1; token="Pokemon"},
+      Leaf {data_type="int"; value=string_of_int (get_stored_pokemon_power $1); token="LITERAL"})
+    else
+    name_error $1
+  }
 
   Assignment:
-  | Declaration ASSIGN Literal                   { Node(
-    $1,
-    {data_type="Pokemon_Type"; value="ASSIGN"; token="ASSIGN"},
-    $3) } /* TODO: type check $3 aka literal to be an int, If valid insert into hashtbl */
+  | Declaration ASSIGN Literal                   { let n = Node(
+                                                  $1,
+                                                  {data_type="Pokemon_Type"; value="ASSIGN"; token="ASSIGN"},
+                                                  $3)
+                                                  in update_sym_table $1 $3;
+                                                  n
+                                                  }
+
   ;
 
   Declaration:
@@ -191,8 +220,9 @@
   typecheck_error "Invalid Type"}
   | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
     then  Node (
-      Leaf {data_type="Pokemon_Type"; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
-      {data_type="Pokemon"; value=$1; token="IDENTIFIER"},
+      Leaf {data_type=get_stored_pokemon_type $1; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
+      {data_type="Pokemon"; value=$1; token="Pokemon"},
+
       Leaf {data_type="int"; value=string_of_int (get_stored_pokemon_power $1); token="LITERAL"})
     else
     name_error $1
