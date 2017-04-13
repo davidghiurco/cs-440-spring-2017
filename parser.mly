@@ -175,7 +175,7 @@
   | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
     then  Node (
       Leaf {data_type="Pokemon_Type"; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
-      {data_type="Pokemon"; value=$1; token="IDENTIFIER"},
+      {data_type="Pokemon"; value=$1; token="Pokemon"},
       Leaf {data_type="int"; value=string_of_int (get_stored_pokemon_power $1); token="LITERAL"})
     else
     name_error $1
@@ -219,8 +219,8 @@
   typecheck_error "Invalid Type"}
   | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
     then  Node (
-      Leaf {data_type="Pokemon_Type"; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
-      {data_type="Pokemon"; value=$1; token="IDENTIFIER"},
+      Leaf {data_type=get_stored_pokemon_type $1; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
+      {data_type="Pokemon"; value=$1; token="Pokemon"},
       Leaf {data_type="int"; value=string_of_int (get_stored_pokemon_power $1); token="LITERAL"})
     else
     name_error $1
