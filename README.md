@@ -38,7 +38,7 @@ Terminals are lowercase. Non-Terminals are uppercase. <br />
 
 *Program => Pokefight main ( ) { Statements } <br />
 Statements  => { Statement } <br />
-Statement   => Assignment | Fight <br />
+Statement   => Assignment | Fight <br /> //
 Assignment  => Declaration = Expression ; <br />
 Declaration => Type identifier <br />
 Expression  => int <br />
