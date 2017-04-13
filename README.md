@@ -146,17 +146,6 @@ WATER beats FIRE by 6 damage
 ```
 ---
 
-Syntax Error
-
-Input:
-```
-```
-
-Output:
-```
-```
----
-
 Name Error
 
 Input:
@@ -180,5 +169,52 @@ FIRE FOUR FIGHT WATER 3;
 Output:
 ```
 Fatal error: exception Parser.Typecheck_error("Invalid Type")
+```
+---
+
+Token Error
+
+Input:
+```
+FIRE 0.2 FIGHT WATER 2;
+```
+
+Output:
+```
+Fatal error: exception Lexer.Syntax+error("couldn't identify the token on line 1
+```
+---
+
+AST Tree Example
+
+Input:
+```
+FIRE 2 FIGHT WATER 3;
+```
+
+Output:
+```
+------
+| ------
+| | ------
+| | | ------
+| | | | ------
+| | | | | Pokemon_Type--FIRE
+| | | | Pokemon
+| | | | | LITERAL--2
+| | | | ------
+| | | FIGHT
+| | | | ------
+| | | | | Pokemon_Type--WATER
+| | | | Pokemon
+| | | | | LITERAL--3
+| | | | ------
+| | | ------
+| | Statement
+| | ------
+| Statements
+| ------
+Main
+------
 ```
 ---
