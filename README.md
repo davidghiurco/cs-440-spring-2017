@@ -38,12 +38,13 @@ Terminals are lowercase. Non-Terminals are uppercase. <br />
 
 *Program => Pokefight main ( ) { Statements } <br />
 Statements  => { Statement } <br />
-Statement   => Assignment | Fight <br /> //
-Assignment  => Declaration = Expression ; <br />
+Statement   => Assignment | Fight <br />
+Assignment  => Declaration = Literal ; <br />
 Declaration => Type identifier <br />
-Expression  => int <br />
+Literal     => int <br />
 Type        => water | fire | grass | electric <br />
-Fight       => identifier fight identifier ; <br />*
+Pokemon     => Type Literal | identifier
+Fight       => Fight FIGHT Pokemon | Pokemon; <br />*
 
 This grammar is _unambiguous_ because it contains no operators of different precedence and recursion is kept to a minimum. For any input, there will be only one left-most derivation. <br />
 
@@ -145,4 +146,4 @@ WATER beats FIRE by 6 damage
 ```
 ---
 
-
+Syntax, Type Check, Token Error, Name
