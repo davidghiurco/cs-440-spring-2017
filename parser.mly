@@ -88,8 +88,8 @@
   type symbols_table_entry = {pokemontype:string; power: int};;
   let is_valid_value v = if v > 0 then v else codegen_error "Pokemon value is not valid. Must be positive integer.";;
   let symbols_table = ref (Hashtbl.create 12345);;
-  let assign_var (key: string) (poke_type: string) (p: int) = 
-    let p_entry = {pokemontype=poke_type;power=p} in 
+  let assign_var (key: string) (poke_type: string) (p: int) =
+    let p_entry = {pokemontype=poke_type;power=p} in
     Hashtbl.replace !symbols_table key p_entry;
   ;;
   let get_var key = Hashtbl.find !symbols_table key ;;
@@ -167,9 +167,9 @@
 
   Statement:
   | Assignment                                  { Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )}
-  | Fight                                       { pokemon_fight_ast $1 ; Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )} 
-  | Retrieve    { Node_OneChild(Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"}),{data_type="Pokemon_Type"; value="Retrieve"; token="Retrieve"} ) } 
-  ; 
+  | Fight                                       { pokemon_fight_ast $1 ; Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"} )}
+  | Retrieve    { Node_OneChild(Node_OneChild($1, {data_type="Pokemon_Type"; value="Statement"; token="Statement"}),{data_type="Pokemon_Type"; value="Retrieve"; token="Retrieve"} ) }
+  ;
 
   Retrieve:
   | IDENTIFIER                          {if Hashtbl.mem !symbols_table $1
@@ -198,6 +198,16 @@
     {data_type="Pokemon_Type"; value="DECLARATION"; token="DECLARATION"},
     Leaf {data_type="string"; value=$2; token="IDENTIFIER"}
     );}
+  | IDENTIFIER {  if Hashtbl.mem !symbols_table $1
+      then
+      let poke_node = Node (
+        Leaf {data_type=get_stored_pokemon_type $1; value=get_stored_pokemon_type $1; token="Pokemon_Type"},
+        {data_type="Pokemon_Type"; value="DECLARATION"; token="DECLARATION"},
+        Leaf {data_type="string"; value=$1; token="IDENTIFIER"})
+        in poke_node
+      else
+        name_error $1
+      }
   ;
 
   Literal:
