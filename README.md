@@ -38,10 +38,12 @@ Terminals are lowercase. Non-Terminals are uppercase. <br />
 
 *Program => Pokefight main ( ) { Statements } <br />
 Statements  => { Statement } <br />
-Statement   => Assignment | Fight <br />
+Statement   => Retrieve | Assignment | Fight <br />
 Assignment  => Declaration = Literal ; <br />
 Declaration => Type identifier <br />
 Literal     => int <br />
+Retrieve    => identifier <br />
+Reassign    => identifier ASSIGN Literal <br />
 Type        => water | fire | grass | electric <br />
 Pokemon     => Type Literal | identifier
 Fight       => Fight FIGHT Pokemon | Pokemon; <br />*
